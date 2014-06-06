@@ -71,10 +71,11 @@ class KnittingChart extends PolymerElement {
           x = ((i - 1) * stitchWidth) + 0.5;
           centerX = (x + x + stitchWidth) / 2;
           
-          context.beginPath();
-          context.arc(centerX,  centerY, radius, 0, 2 * PI);
-          context.fillStyle = '#666666';
-          context.fill();
+          context
+            ..beginPath()
+            ..arc(centerX,  centerY, radius, 0, 2 * PI)
+            ..fillStyle = '#666666'
+            ..fill();
 
 //          print('$i: *');
         }
