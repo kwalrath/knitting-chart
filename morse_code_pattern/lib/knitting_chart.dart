@@ -1,3 +1,5 @@
+library pattern.knitting_chart;
+
 import 'package:polymer/polymer.dart';
 import 'dart:html';
 import 'dart:math' show PI;

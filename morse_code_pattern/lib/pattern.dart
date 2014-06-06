@@ -1,4 +1,4 @@
-// PENDING: put in lib?
+library pattern.knitting_pattern;
 
 class KnittingPattern {
   StringBuffer _sb = new StringBuffer();
