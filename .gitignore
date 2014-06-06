@@ -1,0 +1,4 @@
+morse_code_pattern/packages/
+morse_code_pattern/web/packages/
+morse_code_pattern/build/
+.buildlog
