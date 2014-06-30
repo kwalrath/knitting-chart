@@ -17,6 +17,7 @@ class KnittingChart extends PolymerElement {
   @published int get numRows => pattern.numRows;
   @published int get stitchesPerRow => pattern.numStitches - 1;
   @published num stitchRatio = .8; // column/row ratio = 4:5
+  @published String line1 = "";
   
   num _stitchWidth = 5;
   CanvasElement _canvas;
