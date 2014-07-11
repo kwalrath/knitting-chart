@@ -7,8 +7,9 @@
     <title>Sample app</title>
     <link rel="stylesheet" href="styles.css">
     
-    <link rel="import" href="packages/polymer/polymer.html">
-    <link rel="import" href="packages/morse_code_pattern/knitting_chart.html">
+    <script src="packages/web_components/platform.js"></script>
+    <script src="packages/web_components/dart_support.js"></script>
+    <link rel="import" href="packages/morse_code_pattern/components/knitting_chart.html">
     
   </head>
   <body>
@@ -17,7 +18,7 @@
     <p>Instructions here.</p>
     
     <!-- morse-code-generator></morse-code-generator> -->
-    <knitting-chart id="chart" line1="hello"></knitting-chart>
+    <knitting-chart id="chart" line1="Hello" line2="World"></knitting-chart>
 
     <script type="application/dart">export 'package:polymer/init.dart';</script>
   </body>

@@ -1,4 +1,6 @@
 library pattern.knitting_pattern;
+import 'ascii_to_morse.dart';
+import 'dart:math' as Math;
 
 class KnittingPattern {
   StringBuffer _sb = new StringBuffer();
@@ -16,7 +18,13 @@ class KnittingPattern {
   }
   
   int get numStitches {
-    return _pattern != null ? _pattern[0].length: 0; //XXX instead take max of all row lengths?
+    if (_pattern == null) return 0;
+    
+    int maxLength = 0;
+    for (int i = 0; i < numRows; i++) {
+      maxLength = Math.max(maxLength, _pattern[i].length);
+    }
+    return maxLength;
   }
   
   int currentRow;
@@ -58,12 +66,36 @@ class KnittingPattern {
 }
 
 class MorseCodePattern extends KnittingPattern {
-  String morseCode;
+  List<String> morseCode;
   // TODO: Test that DART_IN_MORSE_CODE == default _pattern;
   
   MorseCodePattern(this.morseCode) {
     if (morseCode != null) {
-      _pattern = [['1'].addAll(convertMorseToStitches(morseCode))];
+      int numRows = morseCode.length;
+      _pattern = new List<List>(numRows);
+      var maxStitches = 0;
+      
+      // Put the stitches into the pattern.
+      for (int i = 0; i < numRows; i++) {
+        List<String> stitches = convertMorseRowToStitches(morseCode[i]);        
+        _pattern[i] = new List<String>();
+        _pattern[i].add((i+1).toString());
+        _pattern[i].addAll(stitches);
+        maxStitches = Math.max(maxStitches, _pattern[i].length);
+      }
+      
+      // Center the stitches.
+      for (int i = 0; i < numRows; i++) {
+        var padding = maxStitches - _pattern[i].length;
+        if (padding > 0) {
+          var leftPad = padding ~/ 2;
+          var rightPad = padding - leftPad;
+          var leftFill = new List<String>.filled(leftPad, 'k');
+          var rightFill = new List<String>.filled(rightPad, 'k');
+          _pattern[i].insertAll(1, leftFill);
+          _pattern[i].addAll(rightFill);
+        }
+      }
     } else {
       _pattern = [['Dart',
                    'p','p','p','k','p','k','p', // D
@@ -81,78 +113,79 @@ class MorseCodePattern extends KnittingPattern {
    * `'-.. .- .-. -'`—and converts it into a list of knit ('k')
    * and purl ('p') stitches.
    */
-  static List<String> convertMorseToStitches(String stitches) {
+  static List<String> convertMorseRowToStitches(String stitches) {
     var row = new List<String>();
     const DASH = const['p', 'p', 'p'];
     const DOT = const['p'];
-    const SPACE = const['k']; //XXX why does this work?
+    const SPACE = const['k'];
         
     for (int i = 0; i < stitches.length; i++) {
       if (i != 0) {
         row.add('k');
       }
-
-      switch(stitches[i]) {
-        case '-': 
-          row.addAll(DASH);
-          break;
-        case '.': 
-          row.addAll(DOT);
-          break;
-        case ' ':
-          row.addAll(SPACE);
-          break;
-        default:
-          print('Unknown Morse code character: ${stitches[i]}');
+      
+      for (int j = 0; j < stitches[i].length; j++) { 
+        if (j != 0) {
+          row.add('k');
+        }
+        switch(stitches[i][j]) {
+          case '-': 
+            row.addAll(DASH);
+            break;
+          case '.': 
+            row.addAll(DOT);
+            break;
+          case ' ':
+            row.addAll(SPACE);
+            break;
+          default:
+            print('Unknown Morse code character: ${stitches[i][j]}');
+        }
       }
     }
       
     return row;
   }
 
-  static List<String> convertMorseToSB(String stitches) {
-    var sb = new StringBuffer();
-    const DASH = 'ppp';
-    const DOT = 'p';
-    const SPACE = 'kkk';
-    String delimiter = '';
-    
-    for (var i = 0; i < stitches.length; i++) {
-      switch(stitches[i]) {
-        case '-': 
-          sb.write(delimiter);
-          sb.write(DASH);
-          delimiter = 'k';
-          break;
-        case '.': 
-          sb.write(delimiter);
-          sb.write(DOT);
-          delimiter = 'k';
-          break;
-        case ' ':
-          sb.write(SPACE);
-          delimiter = '';
-          break;
-        default:
-          print('Unknown Morse code character: ${stitches[i]}');
-      }
-    }
-      
-    return sb.toString().split('');
-  }
+//  static List<String> convertMorseToSB(String stitches) {
+//    var sb = new StringBuffer();
+//    const DASH = 'ppp';
+//    const DOT = 'p';
+//    const SPACE = 'kkk';
+//    String delimiter = '';
+//    
+//    for (var i = 0; i < stitches.length; i++) {
+//      switch(stitches[i]) {
+//        case '-': 
+//          sb.write(delimiter);
+//          sb.write(DASH);
+//          delimiter = 'k';
+//          break;
+//        case '.': 
+//          sb.write(delimiter);
+//          sb.write(DOT);
+//          delimiter = 'k';
+//          break;
+//        case ' ':
+//          sb.write(SPACE);
+//          delimiter = '';
+//          break;
+//        default:
+//          print('Unknown Morse code character: ${stitches[i]}');
+//      }
+//    }
+//      
+//    return sb.toString().split('');
+//  }
 }
 
-main() { // TODO: make this a real test
-//  var row = MorseCodePattern.convertMorseToStitches('. - -.');
-  var row = MorseCodePattern.convertMorseToSB('. - -.');
-  print(row);
-  //[p, k, k, k, p, p, p, k, k, k, p, p, p, k, p]
-
-//  row = MorseCodePattern.convertMorseToStitches('.- . - -- ..');
-  row = MorseCodePattern.convertMorseToSB('.- . - -- ..');
-  print(row);
-  //[p, k, p, p, p, k, k, k, p, k, k, k, p, p, p, k, k, k, p, p, p, k, p, p, p, k, k, k, p, k, p]
+main() { // TODO: make this a real test  
+  var pattern = new MorseCodePattern(['-', '.', '... ---']);
+  print(pattern);
   
-  var pattern = new MorseCodePattern('... --- ...');
+  var morseWord1 = convertAsciiWordToMorseString('fudge');
+  var morseWord2 = convertAsciiWordToMorseString('cancan');
+  pattern = new MorseCodePattern([morseWord1, morseWord2]);
+  print('$morseWord1\n$morseWord2:');
   print(pattern);
 }

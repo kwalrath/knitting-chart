@@ -3,32 +3,56 @@ library pattern.knitting_chart;
 import 'package:polymer/polymer.dart';
 import 'dart:html';
 import 'dart:math' show PI;
-import 'pattern.dart';
+import '../pattern.dart';
+import '../ascii_to_morse.dart';
+
 
 /**
  * A Polymer knitting chart element.
  */
 @CustomTag('knitting-chart')
 class KnittingChart extends PolymerElement {
-  static const String DART_IN_MORSE_CODE = '-.. .- .-. -';
+  static String DART_IN_MORSE_CODE = convertAsciiWordToMorseString('Dart');
   
-//  @published KnittingPattern pattern = new MorseCodePattern(DART_IN_MORSE_CODE);
-  @published KnittingPattern pattern = new KnittingPattern();
+  int _leftPad = 0;
+  int _rightPad = 0;
+  @published KnittingPattern pattern;
   @published int get numRows => pattern.numRows;
-  @published int get stitchesPerRow => pattern.numStitches - 1;
+  @published set stitchesPerRow(int numStitches) {
+    if ((pattern != null) && (stitchesPerRow < numStitches)) {
+      _leftPad = (numStitches - stitchesPerRow) ~/ 2;
+      _rightPad = numStitches - stitchesPerRow - _leftPad;
+    }
+  }
+  @published int get stitchesPerRow {
+    return pattern.numStitches - 1;  //XXX: why -1?
+  }
   @published num stitchRatio = .8; // column/row ratio = 4:5
-  @published String line1 = "";
+  @published String line1; // What's the best way to support multiple lines?
+  @published String line2;
   
-  num _stitchWidth = 5;
+  num _stitchWidth = 5; // in pixels?
   CanvasElement _canvas;
   
-  KnittingChart.created() : super.created();
+  KnittingChart.created() : super.created() {
+    // XXX: If we could add lines to an existing pattern, this code would be simpler.
+    if (line1 != null) {
+      if (line2 != null) {
+        pattern = new MorseCodePattern([convertAsciiWordToMorseString(line1),
+                                        convertAsciiWordToMorseString(line2)]);
+      } else {
+        pattern = new MorseCodePattern([convertAsciiWordToMorseString(line1)]);
+      }
+    } else {
+      pattern = new MorseCodePattern([DART_IN_MORSE_CODE]);
+    }
+  }
   
   /**
    * Calculates the cell size and draws the chart.
    */
-  @override enteredView() {
-    super.enteredView();
+  @override attached() {
+    super.attached();
 
     _canvas = $['chart'];
 
