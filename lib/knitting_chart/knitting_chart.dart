@@ -2,7 +2,7 @@
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 import 'package:angular2/core.dart';
-import 'package:KnittingChart/converter/ascii_to_morse.dart';
+import 'package:KnittingChart/converters/ascii_to_morse.dart';
 
 @Component(
   selector: 'knitting-chart',
