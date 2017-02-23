@@ -1,0 +1,26 @@
+<h1>Morse Code Pattern Generator</h1>
+
+<p> Create a knitting pattern that displays your short phrase in Morse code. </p>
+
+<material-input #myInput
+                label="A short phrase"
+                floatingLabel
+                autoFocus>
+</material-input>
+
+<material-button raised
+                 (trigger)="chart.phrase=myInput.inputText"
+                 class="blue">
+  Create pattern
+</material-button>
+<!--<material-button raised -->
+                 <!--(trigger)="myDialog.open()"-->
+                 <!--class="blue">-->
+    <!--Create pattern-->
+<!--</material-button>-->
+
+<knitting-chart #chart></knitting-chart>
+
+<hello-dialog #myDialog
+             [name]="myInput.inputText">
+</hello-dialog>
